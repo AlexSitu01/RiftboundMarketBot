@@ -1,3 +1,4 @@
+import asyncio
 import os
 import discord
 from discord.ext import commands
@@ -12,7 +13,7 @@ bot = commands.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
-    await bot.sync_commands()
+    # await bot.tree.sync()
     print(f'We have logged in as {bot.user}')
     
 @bot.slash_command(name="ping", description="Responds with Pong!")
@@ -24,6 +25,8 @@ async def ping(ctx):
     await ctx.respond("Pong!")
         
 
-bot.load_extension('economy')
+async def main():
+    bot.load_extension("commands.economy")
+    await bot.start(DISCORD_TOKEN)
 
-bot.run(DISCORD_TOKEN)
+asyncio.run(main())
