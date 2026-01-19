@@ -9,13 +9,15 @@ class Card:
         self.currentPrice = data.get('variants')[variant].get('price')
         self.last_updated = data.get('variants')[variant].get('lastUpdated')
         self.tcg_playerSku_id = data.get('variants')[variant].get('tcgplayerSkuId')
-        self.price_change_24h = data.get('variants')[variant].get('priceChange24h')
+        self.price_change_24h = data.get('variants')[variant].get('priceChange24hr')
         self.price_change_7d = data.get('variants')[variant].get('priceChange7d')
         self.price_change_30d = data.get('variants')[variant].get('priceChange30d')
         self.avg_price = data.get('variants')[variant].get('avgPrice')
         self.min_price = data.get('variants')[variant].get('minPrice1y')
         self.max_price = data.get('variants')[variant].get('maxPrice1y')
         self.printing = data.get('variants')[variant].get('printing')
+        self.price_history = data.get('variants')[variant].get('priceHistory', [])
+        self.trend_slope_7d = data.get('variants')[variant].get('trendSlope7d')
 
     def to_dict(self) -> dict:
         return {
@@ -34,5 +36,8 @@ class Card:
             "maxPrice1y": self.max_price,
             "name": self.name,
             "number": self.number,
-            "printing": self.printing
+            "printing": self.printing,
+            "priceHistory": self.price_history,
+            "trendSlope7d": self.trend_slope_7d
+            
         }
