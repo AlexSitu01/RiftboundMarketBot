@@ -13,11 +13,11 @@ class Card:
         self.price_change_7d = data.get('variants')[variant].get('priceChange7d')
         self.price_change_30d = data.get('variants')[variant].get('priceChange30d')
         self.avg_price = data.get('variants')[variant].get('avgPrice')
-        self.min_price = data.get('variants')[variant].get('minPrice1y')
-        self.max_price = data.get('variants')[variant].get('maxPrice1y')
+        self.min_price = data.get('variants')[variant].get('minPrice30d')
+        self.max_price = data.get('variants')[variant].get('maxPrice30d')
         self.printing = data.get('variants')[variant].get('printing')
         self.price_history = data.get('variants')[variant].get('priceHistory', [])
-        self.trend_slope_7d = data.get('variants')[variant].get('trendSlope7d')
+        self.trend_slope_30d = data.get('variants')[variant].get('trendSlope30d')
 
     def to_dict(self) -> dict:
         return {
@@ -32,12 +32,12 @@ class Card:
             "priceChange7d": self.price_change_7d,
             "priceChange30d": self.price_change_30d,
             "avgPrice": self.avg_price,
-            "minPrice1y": self.min_price,
-            "maxPrice1y": self.max_price,
+            "minPrice30d": self.min_price,
+            "maxPrice30d": self.max_price,
             "name": self.name,
             "number": self.number,
             "printing": self.printing,
             "priceHistory": self.price_history,
-            "trendSlope7d": self.trend_slope_7d
+            "trendSlope30d": self.trend_slope_30d
             
         }
