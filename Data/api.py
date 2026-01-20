@@ -118,4 +118,23 @@ class TCG_API:
 
     async def find_card(self, name: str, condition: str) -> list[dict]:
         return await self.supabase.find_card(name, condition)
-       
+    
+    async def addCardToFollow(self, card, discUserId: str):
+        cardId = card.get("cardId")
+        if cardId:
+            await self.supabase.followCard(cardId=cardId, discUserId=discUserId)
+    
+    async def unfollowCard(self, card, discUserId: str):
+        cardId = card.get("cardId")
+        if cardId:
+            await self.supabase.unfollowCard(cardId=cardId, discUserId=discUserId)
+            
+    async def getFollowCards(self) -> list[dict]:
+        userCardsToSend = await self.supabase.getUserCards()
+        if userCardsToSend:
+            return userCardsToSend
+        
+    async def findCardById(self, cardId: str) -> dict:
+        card = await self.supabase.findCardById(cardId)
+        return card
+    
