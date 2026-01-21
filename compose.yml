@@ -1,0 +1,5 @@
+services:
+  app:
+    image: alexsitu1/riftboundbot
+    env_file:
+      - .env

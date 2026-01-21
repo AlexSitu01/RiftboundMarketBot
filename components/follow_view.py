@@ -9,7 +9,7 @@ class FollowView(discord.ui.View):
         self.card = card
         
     @discord.ui.button(
-        label="Get Notified",
+        label="Follow",
         style=discord.ButtonStyle.primary
     )
     async def follow(
@@ -19,7 +19,7 @@ class FollowView(discord.ui.View):
     ):
         await self.api.addCardToFollow(self.card, interaction.user.id)
         await interaction.response.send_message(
-            "You will be notified for any price changes for this card!",
+            "You will be notified for any price changes over 5\% for this card daily.",
             ephemeral=True
         )
     
