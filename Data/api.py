@@ -38,6 +38,26 @@ class TCG_API:
                 print("Supabase upsert failed:", e)
 
         self._db_futures.clear()
+        
+    def get_change_field(self, timeframe: str) -> str:
+        if timeframe == "day":
+            return "priceChange24hr"
+        if timeframe == "week":
+            return "priceChange7d"
+        if timeframe == "month":
+            return "priceChange30d"
+        raise ValueError("Invalid timeframe. Use: 24h, 7d, or 30d")
+        
+    def get_price_bucket(self, price: float) -> str | None:
+        if price is None:
+            return None
+        if 0 <= price <= 5:
+            return "low"
+        if 5.01 <= price <= 20:
+            return "mid"
+        if price >= 20.01:
+            return "high"
+        return None
 
     # Fetch and update cards from the JustTCG API
     def update_cards(self) -> None:
@@ -138,3 +158,56 @@ class TCG_API:
         card = await self.supabase.findCardById(cardId)
         return card
     
+    
+    async def getSummary(self, timeframe: str = "day") -> list[dict]:
+        cards = await self.supabase.getCards()
+        result = [[0] * 2 for _ in range(6)]
+        
+        TIME = self.get_change_field(timeframe)
+        
+        buckets = {
+        "low": [],
+        "mid": [],
+        "high": [],
+        }
+        for card in cards:
+            price = card.get("currentPrice")
+            change = card.get(TIME)
+
+            if price is None or change is None:
+                continue
+
+            bucket = self.get_price_bucket(price)
+            if bucket:
+                buckets[bucket].append(card)
+
+        result = {
+            "low": {"gainer": None, "loser": None},
+            "mid": {"gainer": None, "loser": None},
+            "high": {"gainer": None, "loser": None},
+        }
+
+        # Find movers per bucket
+        for bucket, bucket_cards in buckets.items():
+            if not bucket_cards:
+                continue
+
+            # Largest gainer
+            result[bucket]["gainer"] = max(
+                bucket_cards,
+                key=lambda c: c.get(TIME, float("-inf")),
+                default=None,
+            )
+
+            # Largest loser
+            result[bucket]["loser"] = min(
+                bucket_cards,
+                key=lambda c: c.get(TIME, float("inf")),
+                default=None,
+            )
+
+        return result
+    
+    async def unfollowAll(self, discUserId: str):
+        await self.supabase.unfollow_all(discUserId)
+            

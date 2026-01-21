@@ -65,3 +65,16 @@ class Supabase:
             return response.data[0] if response.data else None
         except Exception as e:
             print(f"Error getting card by id")
+            
+    async def getCards(self):
+        try:
+            response = await self.supabase.table("Cards").select("*").execute()
+            return response.data
+        except Exception as e:
+            print(f"Error getting cards.")
+            
+    async def unfollow_all(self, discUserId: str):
+        try:
+            await self.supabase.table("UserCards").delete().eq("discUserId", discUserId).execute()
+        except Exception as e:
+            print(f"Error unfollowing all cards:{e}")
