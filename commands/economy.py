@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from components.follow_view import FollowView
 TEST_GUILD_ID = 1169059604370575381  # Replace with your test server's guild ID
 TEST_GUILD_ID2 = 1148122592293699584
-DEBUG = False
+DEBUG = True
 load_dotenv()
 TCG_KEY = os.getenv('TCGAPI_KEY')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
@@ -159,6 +159,24 @@ class Economy(commands.Cog):
         await ctx.defer()
         await self.tcg_api.unfollowAll(ctx.author.id)
         await ctx.followup.send("Finished unfollowing all cards.")
+        
+    @commands.slash_command(name="show_followed", description="Get list of followed cards", guild_ids=[TEST_GUILD_ID, TEST_GUILD_ID2] if DEBUG else None)
+    async def show_followed(self, ctx):
+        if not await self.is_ready(ctx):
+            return
+
+        await ctx.defer()
+
+        followedCards = await self.tcg_api.getUserFollowedCards(ctx.author.id)
+        
+        if not followedCards:
+            await ctx.followup.send("You are not following any cards.")
+            return
+        
+        for userCard in followedCards:
+            card = await self.tcg_api.findCardById(userCard.get("cardId"))
+            embed, view = self.create_embed(card)
+            await ctx.followup.send(embed=embed, view=view)
         
     @tasks.loop(time=datetime.time(hour=6, minute=0, tzinfo=pytz.timezone("US/Pacific")))
     async def daily_data_pull(self):

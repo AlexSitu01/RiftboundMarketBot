@@ -78,3 +78,11 @@ class Supabase:
             await self.supabase.table("UserCards").delete().eq("discUserId", discUserId).execute()
         except Exception as e:
             print(f"Error unfollowing all cards:{e}")
+            
+    async def getUserFollowedCards(self, discUserId: str) -> list[dict]:
+        try:
+            response = await self.supabase.table("UserCards").select("*").eq("discUserId", discUserId).execute()
+            return response.data
+        except Exception as e:
+            print(f"Error getting followed cards for user {discUserId}: {e}")
+            return []
