@@ -211,3 +211,6 @@ class TCG_API:
     async def unfollowAll(self, discUserId: str):
         await self.supabase.unfollow_all(discUserId)
             
+    async def getUserFollowedCards(self, discUserId: str) -> list[dict]:
+        cards = await self.supabase.getUserFollowedCards(discUserId)
+        return cards
